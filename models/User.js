@@ -30,7 +30,17 @@ const userSchema = new mongoose.Schema(
     isEmailVerified: {
         type: Boolean,
         default: false
+    },
+    Image:{
+        type: String,
+        required: false,
+        default: 0
+    },
+    invalidTires: {
+        type: Number,
+        default: 0
     }
+
 }
 )
 const User = mongoose.model('User', userSchema);

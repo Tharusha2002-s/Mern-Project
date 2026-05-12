@@ -40,6 +40,13 @@ export function loginUser(req, res) {
                 });
             }
 
+            if(user.invalidTires >= 3){
+                return res.status(403).json({
+                    message: 'Account is blocked due to multiple failed login attempts',
+                });
+                return
+            }
+
             const isPasswordCorrect = bcrypt.compareSync(password, user.password);
 
             if (isPasswordCorrect) {
@@ -51,14 +58,19 @@ export function loginUser(req, res) {
                     Image: user.Image,
                 };
                 const token = jwt.sign(payload, 'secretKey96$2025', { expiresIn: '1h' });
+                
                 res.json({
                     message: 'Login successful',
                     token: token
                 });
             } else {
-                res.status(401).json({
+                User.updateOne({ email: email }, {
+                    invalidTires: user.invalidTires + 1
+                 } ).then(() => {
+                    res.status(401).json({
                     message: 'Incorrect password',
                 });
+                 })
             }
         })
         .catch((error) => {

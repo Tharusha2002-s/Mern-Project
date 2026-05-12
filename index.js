@@ -21,23 +21,32 @@ app.use(express.json())
 app.use(
     (req,res,next)=>{
     const authorizationHeaders = req.header("authorization")
-    if(authorizationHeaders !== null){
+    if(authorizationHeaders){
         const token = authorizationHeaders.replace("Bearer ", "")
         console.log(token)
 
         jwt.verify(token,'secretKey96$2025',
-            (err, decoded) => {
-                if(err){
-                    console.error('Invalid token:', err)
-                    return res.status(401).json({ message: 'Unauthorized' })
+            (error, content) => {
+                if(content == null){
+                    console.error("Invalid token")
+                    res.json(
+                        {
+                            message : "Invalid token"
+                        }
+                    )
+                    
                 }else{
-                    console.log('Decoded token:', decoded)
-                    req.user = decoded
+                    console.log(content)
+                    req.user = content
+                    next()
                 }
             }
         )
-    }   
-    next()
+    } else{
+        next()
+    }
+
+    
 }
 )
 

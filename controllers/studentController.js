@@ -1,6 +1,22 @@
 import Student from '../models/student.js';
 
 export function getAllUsers(req, res){
+
+    if(req.user==null){
+        res.json({
+            message : "Unauthorized"
+        }
+        )
+        return
+    }
+    if(req.user.role !== "admin"){
+        res.json({
+            message : "Forbidden"
+        }
+        )
+        return
+    }
+
     Student.find().then((students) => {
         res.json(students)
     })
