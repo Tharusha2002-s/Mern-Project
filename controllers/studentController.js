@@ -1,7 +1,7 @@
 import Student from '../models/student.js';
 
 export function getAllUsers(req, res){
-    student.find().then((students) => {
+    Student.find().then((students) => {
         res.json(students)
     })
 }

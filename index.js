@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import Student from './models/student.js';
 import studentRouter from './routes/studentRouter.js';
 import userRouter from './routes/userRouter.js';
+import jwt from 'jsonwebtoken';
 
 
 const mongoURI ="mongodb://admin:hello123@ac-4vc5awv-shard-00-00.pzynyfj.mongodb.net:27017,ac-4vc5awv-shard-00-01.pzynyfj.mongodb.net:27017,ac-4vc5awv-shard-00-02.pzynyfj.mongodb.net:27017/?ssl=true&replicaSet=atlas-m7vvpu-shard-0&authSource=admin&appName=Cluster0"
@@ -16,6 +17,29 @@ mongoose.connect(mongoURI).then(() => {
 const app = express()
 
 app.use(express.json())
+
+app.use(
+    (req,res,next)=>{
+    const authorizationHeaders = req.header("authorization")
+    if(authorizationHeaders !== null){
+        const token = authorizationHeaders.replace("Bearer ", "")
+        console.log(token)
+
+        jwt.verify(token,'secretKey96$2025',
+            (err, decoded) => {
+                if(err){
+                    console.error('Invalid token:', err)
+                    return res.status(401).json({ message: 'Unauthorized' })
+                }else{
+                    console.log('Decoded token:', decoded)
+                    req.user = decoded
+                }
+            }
+        )
+    }   
+    next()
+}
+)
 
 app.use('/students', studentRouter)
 app.use('/users', userRouter)
