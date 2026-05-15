@@ -1,4 +1,4 @@
-import User from '../models/user.js';
+import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -80,3 +80,13 @@ export function loginUser(req, res) {
             });
         });
 }  
+
+export function  isAdmin(req) {
+    if(req.user == null) {
+        return false;
+    }
+    if(req.user.role !== 'admin') {
+        return false;
+    } 
+    return true
+}
